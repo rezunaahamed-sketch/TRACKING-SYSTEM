@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAP_API_KEY"></script>
+</head>
+<body>
+
+<h2>Live Location Sharing</h2>
+<button onclick="startTracking()">Start Tracking</button>
+<div id="map" style="height:400px;"></div>
+
+<script>
+const socket = io();
+let map, marker;
+const trackingId = localStorage.getItem("trackingId");
+
+function initMap(){
+  map = new google.maps.Map(document.getElementById('map'),{
+    zoom:15,
+    center:{lat:0,lng:0}
+  });
+  marker = new google.maps.Marker({map});
+}
+initMap();
+
+function startTracking(){
+  navigator.geolocation.watchPosition((pos)=>{
+    socket.emit('locationUpdate',{
+      trackingId,
+      lat:pos.coords.latitude,
+      lng:pos.coords.longitude
+    });
+  });
+}
+
+socket.on('locationUpdate',(data)=>{
+  if(data.trackingId === trackingId){
+    marker.setPosition({lat:data.lat,lng:data.lng});
+    map.setCenter({lat:data.lat,lng:data.lng});
+  }
+});
+</script>
+
+</body>
+</html>
