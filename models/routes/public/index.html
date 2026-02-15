@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Tracking Login</title>
+</head>
+<body>
+
+<h2>Register</h2>
+<input id="regUser" placeholder="Username">
+<input id="regPass" type="password" placeholder="Password">
+<button onclick="register()">Register</button>
+
+<h2>Login</h2>
+<input id="logUser" placeholder="Username">
+<input id="logPass" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+
+<script>
+async function register(){
+  const res = await fetch('/api/register',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      username:regUser.value,
+      password:regPass.value
+    })
+  });
+  const data = await res.json();
+  alert("Your Tracking ID: " + data.trackingId);
+}
+
+async function login(){
+  const res = await fetch('/api/login',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      username:logUser.value,
+      password:logPass.value
+    })
+  });
+  const data = await res.json();
+  localStorage.setItem("trackingId", data.trackingId);
+  window.location = "dashboard.html";
+}
+</script>
+
+</body>
+</html>
